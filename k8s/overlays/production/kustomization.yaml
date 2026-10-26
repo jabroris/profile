@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: portfolio-production
+
+resources:
+  - ../../base
+
+# Production: full replicas, stricter resource limits, production profile
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+    target:
+      kind: Deployment
+      name: portfolio-app
+  - patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 3
+      - op: replace
+        path: /spec/maxReplicas
+        value: 10
+    target:
+      kind: HorizontalPodAutoscaler
+      name: portfolio-hpa
+
+configMapGenerator:
+  - name: portfolio-config
+    behavior: merge
+    literals:
+      - SPRING_PROFILES_ACTIVE=production
+
+images:
+  - name: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app
+    newTag: latest    # overridden by CI/CD with the actual git SHA tag

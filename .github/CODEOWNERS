@@ -1,0 +1,11 @@
+# Global owners — require review from @jabroris for all changes
+*  @jabroris
+
+# CI/CD workflows — extra scrutiny
+.github/  @jabroris
+
+# Terraform infrastructure changes
+terraform/  @jabroris
+
+# Kubernetes manifests
+k8s/  @jabroris
