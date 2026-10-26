@@ -2,9 +2,10 @@ resource "google_container_cluster" "portfolio" {
   name     = "portfolio-cluster"
   location = var.region
   project  = var.project_id
+  deletion_protection = false
 
   # Use separate node pool; remove default
-  remove_default_node_pool = true
+  remove_default_node_pool = false
   initial_node_count       = 1
 
   network    = google_compute_network.vpc.name
@@ -55,7 +56,7 @@ resource "google_container_cluster" "portfolio" {
 }
 
 resource "google_container_node_pool" "app_nodes" {
-  name     = "app-pool"
+  name     = "default-pool"
   location = var.region
   cluster  = google_container_cluster.portfolio.name
 
@@ -63,7 +64,7 @@ resource "google_container_node_pool" "app_nodes" {
 
   autoscaling {
     min_node_count = 1
-    max_node_count = 5
+    max_node_count = 3
   }
 
   management {
@@ -73,8 +74,8 @@ resource "google_container_node_pool" "app_nodes" {
 
   node_config {
     machine_type = var.gke_machine_type
-    disk_size_gb = 50
-    disk_type    = "pd-ssd"
+    disk_size_gb = 30
+    disk_type    = "pd-balanced"
 
     service_account = google_service_account.gke_nodes.email
     oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -92,5 +93,11 @@ resource "google_container_node_pool" "app_nodes" {
       env = var.environment
     }
     tags = ["gke-node", "portfolio"]
+  }
+
+  lifecycle {
+    ignore_changes = [
+      initial_node_count,  # Managed by autoscaler at runtime
+    ]
   }
 }

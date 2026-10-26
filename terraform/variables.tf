@@ -29,13 +29,13 @@ variable "environment" {
 variable "gke_node_count" {
   description = "Initial nodes per zone in the GKE cluster"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "gke_machine_type" {
   description = "GCE machine type for GKE nodes"
   type        = string
-  default     = "e2-standard-2"
+  default     = "e2-medium"
 }
 
 variable "db_tier" {

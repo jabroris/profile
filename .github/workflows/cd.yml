@@ -47,13 +47,29 @@ jobs:
       - name: Build JAR
         run: chmod +x gradlew && ./gradlew bootJar --no-daemon -x test
 
-      # Keyless auth via Workload Identity Federation (no long-lived SA keys stored in GitHub)
+      - name: Validate GCP auth configuration
+        run: |
+          if [ -z "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] && [ -z "${{ secrets.GCP_CREDENTIALS_JSON }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+            exit 1
+          fi
+
+      # Preferred: keyless auth via Workload Identity Federation
       - name: Authenticate to GCP (Workload Identity Federation)
-        id: auth
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER != '' }}
+        id: auth-wif
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: portfolio-cicd@profile-123456789.iam.gserviceaccount.com
+
+      # Fallback: service account JSON key
+      - name: Authenticate to GCP (Service Account JSON)
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER == '' && secrets.GCP_CREDENTIALS_JSON != '' }}
+        id: auth-json
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
@@ -104,11 +120,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Authenticate to GCP
+      - name: Validate GCP auth configuration
+        run: |
+          if [ -z "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] && [ -z "${{ secrets.GCP_CREDENTIALS_JSON }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+            exit 1
+          fi
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER != '' }}
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: portfolio-cicd@profile-123456789.iam.gserviceaccount.com
+
+      - name: Authenticate to GCP (Service Account JSON)
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER == '' && secrets.GCP_CREDENTIALS_JSON != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
@@ -121,7 +151,15 @@ jobs:
           kubectl create namespace portfolio-staging --dry-run=client -o yaml | kubectl apply -f -
           kubectl create namespace kafka            --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Install Strimzi Kafka Operator (idempotent)
+        continue-on-error: true
+        run: |
+          kubectl apply -f https://strimzi.io/install/latest?namespace=kafka -n kafka
+          kubectl wait --for=condition=available --timeout=90s \
+            deployment/strimzi-cluster-operator -n kafka || true
+
       - name: Apply Kafka manifests (idempotent)
+        continue-on-error: true
         run: kubectl apply -f k8s/kafka/kafka-cluster.yaml
 
       - name: Create/update DB password secret
@@ -176,11 +214,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Authenticate to GCP
+      - name: Validate GCP auth configuration
+        run: |
+          if [ -z "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] && [ -z "${{ secrets.GCP_CREDENTIALS_JSON }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+            exit 1
+          fi
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER != '' }}
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: portfolio-cicd@profile-123456789.iam.gserviceaccount.com
+
+      - name: Authenticate to GCP (Service Account JSON)
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER == '' && secrets.GCP_CREDENTIALS_JSON != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2

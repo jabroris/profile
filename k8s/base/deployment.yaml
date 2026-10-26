@@ -32,6 +32,13 @@ spec:
         - name: portfolio-app
           image: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app:latest
           imagePullPolicy: Always
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: 8080

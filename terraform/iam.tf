@@ -46,10 +46,23 @@ resource "google_project_iam_member" "app_secret_accessor" {
 }
 
 # Workload Identity binding: k8s SA → GCP SA
+# Covers all deploy namespaces: portfolio, portfolio-staging, portfolio-production
 resource "google_service_account_iam_member" "workload_identity_binding" {
   service_account_id = google_service_account.app.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[portfolio/portfolio-sa]"
+}
+
+resource "google_service_account_iam_member" "workload_identity_binding_staging" {
+  service_account_id = google_service_account.app.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[portfolio-staging/portfolio-sa]"
+}
+
+resource "google_service_account_iam_member" "workload_identity_binding_production" {
+  service_account_id = google_service_account.app.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[portfolio-production/portfolio-sa]"
 }
 
 # ---- CI/CD service account for GitHub Actions ----
