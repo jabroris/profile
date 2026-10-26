@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping
 class ResumeController(
     private val profileService: ProfileService,
     private val experienceService: ExperienceService,
-    private val skillService: SkillService
+    private val skillService: SkillService,
 ) {
-
     @GetMapping("/")
     fun resume(model: Model): String {
         val profile = profileService.getProfile()

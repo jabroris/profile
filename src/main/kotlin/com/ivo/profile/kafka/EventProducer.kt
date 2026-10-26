@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 @Component
 class EventProducer(
     private val kafkaTemplate: KafkaTemplate<String, String>,
-    private val eventService: EventService
+    private val eventService: EventService,
 ) {
     private val log = LoggerFactory.getLogger(EventProducer::class.java)
 
@@ -28,10 +28,11 @@ class EventProducer(
                 if (ex != null) {
                     log.warn("Failed to send Kafka message: {}", ex.message)
                 } else {
-                    log.info("Sent to topic={} partition={} offset={}",
+                    log.info(
+                        "Sent to topic={} partition={} offset={}",
                         result.recordMetadata.topic(),
                         result.recordMetadata.partition(),
-                        result.recordMetadata.offset()
+                        result.recordMetadata.offset(),
                     )
                 }
             }
@@ -42,8 +43,8 @@ class EventProducer(
                     message = message,
                     direction = "SENT",
                     timestamp = LocalDateTime.now(),
-                    status = "OK"
-                )
+                    status = "OK",
+                ),
             )
 
             "Message queued for Kafka topic: $topic"
@@ -55,8 +56,8 @@ class EventProducer(
                     message = message,
                     direction = "SENT",
                     timestamp = LocalDateTime.now(),
-                    status = "KAFKA_UNAVAILABLE"
-                )
+                    status = "KAFKA_UNAVAILABLE",
+                ),
             )
             "Kafka unavailable – event stored locally (start Kafka with docker-compose up)"
         }

@@ -9,17 +9,20 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ExperienceRepository : JpaRepository<Experience, Long> {
     fun findAllByOrderByDisplayOrderAsc(): List<Experience>
+
     fun findByTechnologiesContainingIgnoreCase(technology: String): List<Experience>
 }
 
 @Repository
 interface SkillRepository : JpaRepository<Skill, Long> {
     fun findByCategoryOrderByProficiencyLevelDesc(category: String): List<Skill>
+
     fun findAllByOrderByCategoryAscProficiencyLevelDesc(): List<Skill>
 }
 
 @Repository
 interface KafkaEventRepository : JpaRepository<KafkaEvent, Long> {
     fun findTop20ByOrderByTimestampDesc(): List<KafkaEvent>
+
     fun findByDirection(direction: String): List<KafkaEvent>
 }

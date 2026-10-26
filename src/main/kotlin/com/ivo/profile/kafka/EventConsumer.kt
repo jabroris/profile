@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class EventConsumer(private val eventService: EventService) {
-
+class EventConsumer(
+    private val eventService: EventService,
+) {
     private val log = LoggerFactory.getLogger(EventConsumer::class.java)
 
     @KafkaListener(
         topics = [KafkaConfig.TOPIC_PORTFOLIO_EVENTS],
-        groupId = "portfolio-group"
+        groupId = "portfolio-group",
     )
     fun consume(message: String) {
         log.info("Received Kafka message: {}", message)
@@ -25,8 +26,8 @@ class EventConsumer(private val eventService: EventService) {
                 message = message,
                 direction = "RECEIVED",
                 timestamp = LocalDateTime.now(),
-                status = "OK"
-            )
+                status = "OK",
+            ),
         )
     }
 }

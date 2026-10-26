@@ -14,33 +14,35 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { csrf ->
                 // Disable CSRF for API endpoints and H2 console (demo purposes)
                 csrf.ignoringRequestMatchers("/api/**", "/h2-console/**")
-            }
-            .headers { headers ->
+            }.headers { headers ->
                 // Allow H2 console to render in iframes
                 headers.frameOptions { it.sameOrigin() }
-            }
-            .authorizeHttpRequests { auth ->
+            }.authorizeHttpRequests { auth ->
                 auth
                     // Public: resume page, REST API, Swagger, Actuator, H2 console
                     .requestMatchers(
-                        "/", "/css/**", "/js/**",
+                        "/",
+                        "/css/**",
+                        "/js/**",
                         "/api/**",
-                        "/swagger-ui/**", "/api-docs/**", "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/api-docs/**",
+                        "/swagger-ui.html",
                         "/actuator/**",
-                        "/h2-console/**"
+                        "/h2-console/**",
                     ).permitAll()
                     // Admin endpoints require authentication
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
-            }
-            .httpBasic { }
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .anyRequest()
+                    .authenticated()
+            }.httpBasic { }
 
         return http.build()
     }
@@ -50,11 +52,13 @@ class SecurityConfig {
 
     @Bean
     fun userDetailsService(encoder: PasswordEncoder): UserDetailsService {
-        val admin = User.builder()
-            .username("admin")
-            .password(encoder.encode("portfolio2024"))
-            .roles("ADMIN")
-            .build()
+        val admin =
+            User
+                .builder()
+                .username("admin")
+                .password(encoder.encode("portfolio2024"))
+                .roles("ADMIN")
+                .build()
         return InMemoryUserDetailsManager(admin)
     }
 }
