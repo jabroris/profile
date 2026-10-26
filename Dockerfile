@@ -21,6 +21,9 @@ LABEL org.opencontainers.image.title="Ivaylo Blagoev Portfolio"
 LABEL org.opencontainers.image.description="Spring Boot / Kotlin portfolio application"
 LABEL org.opencontainers.image.source="https://github.com/jabroris/portfolio"
 
+# Apply latest Alpine security patches before switching user
+RUN apk upgrade --no-cache
+
 # Non-root user for security
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
