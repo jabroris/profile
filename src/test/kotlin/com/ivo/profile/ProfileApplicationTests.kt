@@ -3,6 +3,9 @@ package com.ivo.profile
 import com.ivo.profile.service.ExperienceService
 import com.ivo.profile.service.ProfileService
 import com.ivo.profile.service.SkillService
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -10,18 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import org.junit.jupiter.api.Assertions.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = [
-    "spring.kafka.bootstrap-servers=localhost:19092",  // non-existent – prevents connection
-    "spring.kafka.listener.missing-topics-fatal=false",
-    "spring.kafka.producer.properties.max.block.ms=100",
-    "spring.kafka.producer.retries=0"
-])
+@TestPropertySource(
+    properties = [
+        "spring.kafka.bootstrap-servers=localhost:19092", // non-existent – prevents connection
+        "spring.kafka.listener.missing-topics-fatal=false",
+        "spring.kafka.producer.properties.max.block.ms=100",
+        "spring.kafka.producer.retries=0",
+    ],
+)
 class ProfileApplicationTests {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
