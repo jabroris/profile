@@ -5,7 +5,7 @@ resource "google_container_cluster" "portfolio" {
   deletion_protection = false
 
   # Use separate node pool; remove default
-  remove_default_node_pool = false
+  remove_default_node_pool = true
   initial_node_count       = 1
 
   network    = google_compute_network.vpc.name
@@ -56,7 +56,7 @@ resource "google_container_cluster" "portfolio" {
 }
 
 resource "google_container_node_pool" "app_nodes" {
-  name     = "default-pool"
+  name     = "portfolio-cluster"
   location = var.region
   cluster  = google_container_cluster.portfolio.name
 
