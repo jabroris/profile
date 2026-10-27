@@ -1,6 +1,7 @@
 resource "google_container_cluster" "portfolio" {
-  name     = "portfolio-cluster"
+  name     = "portfolio-pool"
   location = var.region
+
   project  = var.project_id
   deletion_protection = false
 
@@ -56,7 +57,7 @@ resource "google_container_cluster" "portfolio" {
 }
 
 resource "google_container_node_pool" "app_nodes" {
-  name     = "portfolio-cluster"
+  name     = "app-pool"
   location = var.region
   cluster  = google_container_cluster.portfolio.name
 
