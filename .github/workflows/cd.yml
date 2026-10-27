@@ -12,10 +12,10 @@ concurrency:
 
 env:
   GCP_PROJECT:   profile-123456789
-  GCP_REGION:    us-central1
-  GKE_CLUSTER:   portfolio-cluster
+  GCP_REGION:    us-central1-a
+  GKE_CLUSTER:   portfolio-pool
   REGISTRY:      us-central1-docker.pkg.dev
-  IMAGE:         us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app
+  IMAGE:         us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-pool
 
 jobs:
 
