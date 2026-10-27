@@ -12,6 +12,6 @@ resources:
   - hpa.yaml
 
 commonLabels:
-  app.kubernetes.io/name: portfolio-app
+  app.kubernetes.io/name: portfolio-pool
   app.kubernetes.io/part-of: portfolio
   app.kubernetes.io/managed-by: kustomize
