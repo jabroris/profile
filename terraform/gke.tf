@@ -1,6 +1,6 @@
 resource "google_container_cluster" "portfolio" {
   name     = "portfolio-pool"
-  location = var.region
+  location = "us-central1-a"
 
   project  = var.project_id
   deletion_protection = false
@@ -58,7 +58,7 @@ resource "google_container_cluster" "portfolio" {
 
 resource "google_container_node_pool" "app_nodes" {
   name     = "app-pool"
-  location = var.region
+  location = "us-central1-a"
   cluster  = google_container_cluster.portfolio.name
 
   initial_node_count = var.gke_node_count
