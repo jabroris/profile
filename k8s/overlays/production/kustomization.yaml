@@ -14,7 +14,7 @@ patches:
         value: 3
     target:
       kind: Deployment
-      name: portfolio-app
+      name: portfolio-pool
   - patch: |-
       - op: replace
         path: /spec/minReplicas
@@ -33,5 +33,5 @@ configMapGenerator:
       - SPRING_PROFILES_ACTIVE=production
 
 images:
-  - name: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app
+  - name: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-pool
     newTag: latest    # overridden by CI/CD with the actual git SHA tag
