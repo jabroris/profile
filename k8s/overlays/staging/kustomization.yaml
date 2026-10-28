@@ -6,7 +6,7 @@ namespace: portfolio-staging
 resources:
   - ../../base
 
-# Staging uses fewer replicas and lower resource limits
+# Staging patches for Deployment, HPA, and ConfigMap
 patches:
   - patch: |-
       - op: replace
@@ -21,6 +21,7 @@ patches:
     target:
       kind: Deployment
       name: portfolio-pool
+
   - patch: |-
       - op: replace
         path: /spec/minReplicas
@@ -32,11 +33,17 @@ patches:
       kind: HorizontalPodAutoscaler
       name: portfolio-hpa
 
-configMapGenerator:
-  - name: portfolio-config
-    behavior: merge
-    literals:
-      - SPRING_PROFILES_ACTIVE=staging
+  # Override config values for staging using a strategic merge patch
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: portfolio-config
+      data:
+        SPRING_PROFILES_ACTIVE: "staging"
+    target:
+      kind: ConfigMap
+      name: portfolio-config
 
 images:
   - name: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-pool
