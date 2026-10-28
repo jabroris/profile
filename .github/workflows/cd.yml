@@ -182,7 +182,7 @@ jobs:
         run: |
           cd k8s/overlays/staging
           kustomize edit set image \
-            us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app=${{ env.IMAGE }}:${{ github.sha }}
+            us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-pool=${{ env.IMAGE }}:${{ github.sha }}
           kubectl apply -k .
 
       - name: Wait for rollout
@@ -267,7 +267,7 @@ jobs:
         run: |
           cd k8s/overlays/production
           kustomize edit set image \
-            us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app=${{ env.IMAGE }}:${{ github.sha }}
+            us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-pool=${{ env.IMAGE }}:${{ github.sha }}
           kubectl apply -k .
 
       - name: Wait for rollout
