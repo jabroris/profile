@@ -187,7 +187,7 @@ jobs:
 
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/portfolio-app \
+          kubectl rollout status deployment/portfolio-pool \
             --namespace portfolio-staging \
             --timeout=5m
 
@@ -272,7 +272,7 @@ jobs:
 
       - name: Wait for rollout
         run: |
-          kubectl rollout status deployment/portfolio-app \
+          kubectl rollout status deployment/portfolio-pool \
             --namespace portfolio-production \
             --timeout=10m
 
@@ -289,5 +289,5 @@ jobs:
         if: failure()
         run: |
           echo "Deploy failed – rolling back production deployment"
-          kubectl rollout undo deployment/portfolio-app \
+          kubectl rollout undo deployment/portfolio-pool \
             --namespace portfolio-production
