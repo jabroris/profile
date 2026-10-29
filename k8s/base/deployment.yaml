@@ -30,7 +30,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: portfolio-pool
-          image: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app:latest
+          image: us-central1-docker.pkg.dev/profile-123456789/portfolio/portfolio-app
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
