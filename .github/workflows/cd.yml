@@ -160,12 +160,17 @@ jobs:
           kubectl create namespace portfolio-staging --dry-run=client -o yaml | kubectl apply -f -
           kubectl create namespace kafka            --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Install Strimzi Kafka Operator (idempotent)
-        continue-on-error: true
+      - name: Install Strimzi Kafka Operator and Wait for CRDs
         run: |
+          kubectl create namespace kafka --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f https://strimzi.io/install/latest?namespace=kafka -n kafka
-          kubectl wait --for=condition=available --timeout=90s \
-            deployment/strimzi-cluster-operator -n kafka || true
+
+          echo "Waiting for Strimzi CRDs to be established..."
+          kubectl wait --for=condition=established --timeout=120s crd/kafkas.kafka.strimzi.io
+          kubectl wait --for=condition=established --timeout=120s crd/kafkatopics.kafka.strimzi.io
+
+          echo "Applying Kafka cluster manifest..."
+          kubectl apply -f k8s/kafka/kafka-cluster.yaml
 
       - name: Apply Kafka manifests (idempotent)
         continue-on-error: true
