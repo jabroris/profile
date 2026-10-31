@@ -129,12 +129,10 @@ jobs:
           kubectl wait --for=condition=established --timeout=120s crd/kafkatopics.kafka.strimzi.io
           kubectl wait --for=condition=established --timeout=120s crd/kafkanodepools.kafka.strimzi.io
 
-          echo "Refreshing kubectl discovery cache..."
-          kubectl api-resources --api-group=kafka.strimzi.io
-
-      - name: Apply Kafka manifests (idempotent)
+      - name: Apply Kafka manifests (Server-Side Apply)
         run: |
-          kubectl apply --validate=false -f k8s/kafka/kafka-cluster.yaml
+          echo "Applying Kafka cluster manifest using server-side apply..."
+          kubectl apply --server-side --force-conflicts -f k8s/kafka/kafka-cluster.yaml
 
       - name: Create/update DB password secret
         run: |
