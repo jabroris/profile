@@ -5,10 +5,10 @@ metadata:
   name: portfolio-config
   namespace: portfolio
 data:
-  SPRING_PROFILES_ACTIVE: "production"
+  SPRING_PROFILES_ACTIVE: "staging"
   DB_HOST: "127.0.0.1"           # Cloud SQL Auth Proxy sidecar
   DB_PORT: "5432"
-  DB_NAME: "portfoliodb"
+  DB_NAME: "portfolio-db"
   DB_USER: "portfolio"
   SERVER_PORT: "8080"
   JAVA_TOOL_OPTIONS: >-
