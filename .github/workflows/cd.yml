@@ -120,14 +120,21 @@ jobs:
           kubectl create namespace portfolio-staging --dry-run=client -o yaml | kubectl apply -f -
           kubectl create namespace kafka            --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Install Strimzi Kafka Operator and Wait for CRDs
+      - name: Install Strimzi Kafka Operator and Wait for Readiness
         run: |
+          # Apply operator to kafka namespace
           kubectl apply -f https://strimzi.io/install/latest?namespace=kafka -n kafka
+
+          echo "Waiting for Strimzi operator deployment to roll out..."
+          kubectl rollout status deployment/strimzi-cluster-operator -n kafka --timeout=180s
 
           echo "Waiting for Strimzi CRDs to be established..."
           kubectl wait --for=condition=established --timeout=120s crd/kafkas.kafka.strimzi.io
           kubectl wait --for=condition=established --timeout=120s crd/kafkatopics.kafka.strimzi.io
           kubectl wait --for=condition=established --timeout=120s crd/kafkanodepools.kafka.strimzi.io
+
+          echo "Refreshing client schema cache..."
+          kubectl api-resources --api-group=kafka.strimzi.io
 
       - name: Apply Kafka manifests (Server-Side Apply)
         run: |
