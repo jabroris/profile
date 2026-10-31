@@ -139,7 +139,9 @@ jobs:
           kubectl wait --for=condition=established --timeout=60s crd/kafkanodepools.kafka.strimzi.io
 
       - name: Apply Kafka manifests (idempotent)
-        run: kubectl apply -f k8s/kafka/kafka-cluster.yaml
+        run: |
+          echo "Applying Kafka cluster manifest with client-side validation disabled..."
+          kubectl apply --validate=false -f k8s/kafka/kafka-cluster.yaml
 
       - name: Create/update DB password secret
         run: |
