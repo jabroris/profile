@@ -124,13 +124,19 @@ jobs:
         run: |
           kubectl apply -f https://strimzi.io/install/latest?namespace=kafka -n kafka
 
-          echo "Waiting for Strimzi CRDs to be established..."
-          kubectl wait --for=condition=established --timeout=120s crd/kafkas.kafka.strimzi.io
-          kubectl wait --for=condition=established --timeout=120s crd/kafkatopics.kafka.strimzi.io
-          kubectl wait --for=condition=established --timeout=120s crd/kafkanodepools.kafka.strimzi.io
+          echo "Waiting for Strimzi CRDs to be registered in the API server..."
+          for i in {1..30}; do
+            if kubectl get crd kafkas.kafka.strimzi.io kafkatopics.kafka.strimzi.io kafkanodepools.kafka.strimzi.io >/dev/null 2>&1; then
+              echo "All Strimzi CRDs are successfully registered."
+              break
+            fi
+            echo "Waiting for CRDs to appear ($i/30)..."
+            sleep 5
+          done
 
-          echo "Waiting for API server schema index to settle..."
-          sleep 10
+          kubectl wait --for=condition=established --timeout=60s crd/kafkas.kafka.strimzi.io
+          kubectl wait --for=condition=established --timeout=60s crd/kafkatopics.kafka.strimzi.io
+          kubectl wait --for=condition=established --timeout=60s crd/kafkanodepools.kafka.strimzi.io
 
       - name: Apply Kafka manifests (idempotent)
         run: kubectl apply -f k8s/kafka/kafka-cluster.yaml
