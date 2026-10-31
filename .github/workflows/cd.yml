@@ -36,7 +36,7 @@ jobs:
 
     env:
       WIF_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS_JSON }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
     steps:
       - name: Checkout
@@ -54,8 +54,8 @@ jobs:
 
       - name: Validate GCP auth configuration
         run: |
-          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.CREDENTIALS_JSON }}" ]; then
-            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.SERVICE_ACCOUNT }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_SERVICE_ACCOUNT."
             exit 1
           fi
 
@@ -70,11 +70,11 @@ jobs:
 
       # Fallback: service account JSON key
       - name: Authenticate to GCP (Service Account JSON)
-        if: env.WIF_PROVIDER == '' && env.CREDENTIALS_JSON != ''
+        if: env.WIF_PROVIDER == '' && env.SERVICE_ACCOUNT != ''
         id: auth-json
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
@@ -123,7 +123,7 @@ jobs:
 
     env:
       WIF_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS_JSON }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
     steps:
       - name: Checkout
@@ -131,8 +131,8 @@ jobs:
 
       - name: Validate GCP auth configuration
         run: |
-          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.CREDENTIALS_JSON }}" ]; then
-            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.SERVICE_ACCOUNT }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_SERVICE_ACCOUNT."
             exit 1
           fi
 
@@ -144,10 +144,10 @@ jobs:
           service_account: portfolio-cicd@profile-123456789.iam.gserviceaccount.com
 
       - name: Authenticate to GCP (Service Account JSON)
-        if: env.WIF_PROVIDER == '' && env.CREDENTIALS_JSON != ''
+        if: env.WIF_PROVIDER == '' && env.SERVICE_ACCOUNT != ''
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
@@ -220,7 +220,7 @@ jobs:
 
     env:
       WIF_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS_JSON }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
     steps:
       - name: Checkout
@@ -228,8 +228,8 @@ jobs:
 
       - name: Validate GCP auth configuration
         run: |
-          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.CREDENTIALS_JSON }}" ]; then
-            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_CREDENTIALS_JSON."
+          if [ -z "${{ env.WIF_PROVIDER }}" ] && [ -z "${{ env.SERVICE_ACCOUNT }}" ]; then
+            echo "Missing auth secret. Set either GCP_WORKLOAD_IDENTITY_PROVIDER (recommended) or GCP_SERVICE_ACCOUNT."
             exit 1
           fi
 
@@ -241,10 +241,10 @@ jobs:
           service_account: portfolio-cicd@profile-123456789.iam.gserviceaccount.com
 
       - name: Authenticate to GCP (Service Account JSON)
-        if: env.WIF_PROVIDER == '' && env.CREDENTIALS_JSON != ''
+        if: env.WIF_PROVIDER == '' && env.SERVICE_ACCOUNT != ''
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
